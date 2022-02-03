@@ -18,8 +18,14 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-exports.productCreate = async (req, res) => {
+exports.productCreate = async (req, res,next) => {
+  console.log("🚀 ~ file: controllers.js ~ line 22 ~ exports.productCreate= ~ req", req.file)
   try {
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/${req.file.path}`;
+      console.log("🚀 ~ file: controllers.js ~ line 25 ~ exports.productCreate= ~  req.body.image",  req.body.image)
+    }
+    console.log(req.body);
     const newProduct = await Product.create(req.body);
     return res.status(201).json(newProduct);
   } catch (error) {
@@ -38,6 +44,9 @@ exports.productDelete = async (req, res, next) => {
 
 exports.productUpdate = async (req, res, next) => {
   try {
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/${req.file.filename}`;
+    }
     const product = await Product.findByIdAndUpdate(
       { _id: req.product.id },
       req.body,
